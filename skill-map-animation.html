@@ -1,0 +1,1549 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>能力拆解与内容目录</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      background: #f7f7f6;
+      color: #050505;
+      font-family: "Source Han Sans SC", "Noto Sans CJK SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-snap-type: y mandatory;
+    }
+
+    body {
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .page-stack {
+      width: 100%;
+      background: #f7f7f6;
+    }
+
+    .portfolio-cover-section,
+    .skill-map-section,
+    .content-hover-section,
+    .maintenance-section {
+      width: 100%;
+      min-height: 100vh;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+
+    .portfolio-cover-section {
+      --paper: #f7f7f7;
+      --ink: #252525;
+      --soft-ink: #4f4f4f;
+      --line: #282828;
+      --blue: #38aeea;
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Times New Roman", "Songti SC", SimSun, serif;
+    }
+
+    @property --orbit-angle {
+      syntax: "<angle>";
+      inherits: true;
+      initial-value: 0deg;
+    }
+
+    .portfolio-cover-section .portfolio-stage {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      min-height: 620px;
+      background: var(--paper);
+      isolation: isolate;
+    }
+
+    .portfolio-cover-section .portfolio-title {
+      position: absolute;
+      z-index: 3;
+      top: clamp(58px, 10.4vh, 118px);
+      left: clamp(38px, 3.8vw, 72px);
+      margin: 0;
+      color: var(--soft-ink);
+      font-size: clamp(64px, 5.3vw, 102px);
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: 0;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateY(22px);
+      animation: portfolioFadeUp 980ms cubic-bezier(.22, 1, .36, 1) .12s forwards;
+    }
+
+    .portfolio-cover-section .portfolio-subtitle {
+      position: absolute;
+      z-index: 3;
+      left: clamp(36px, 3.7vw, 70px);
+      bottom: clamp(26px, 5.2vh, 56px);
+      margin: 0;
+      color: var(--soft-ink);
+      font-family: "Songti SC", "STSong", "SimSun", serif;
+      font-size: clamp(34px, 2.7vw, 54px);
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: 0;
+      word-spacing: clamp(18px, 2.4vw, 46px);
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateY(22px);
+      animation: portfolioFadeUp 980ms cubic-bezier(.22, 1, .36, 1) .32s forwards;
+    }
+
+    .portfolio-cover-section .slash-field {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .portfolio-cover-section .slash {
+      stroke: var(--line);
+      stroke-width: 1.25;
+      stroke-linecap: round;
+      fill: none;
+      opacity: 0;
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      animation: drawSlash 1.55s cubic-bezier(.22, 1, .36, 1) forwards;
+    }
+
+    .portfolio-cover-section .slash--right {
+      animation-delay: .22s;
+    }
+
+    .portfolio-cover-section .slash--mobile {
+      display: none;
+    }
+
+    .portfolio-cover-section .orbit-area {
+      position: absolute;
+      right: clamp(92px, 11.8vw, 226px);
+      top: clamp(170px, 28.3vh, 306px);
+      width: min(34.2vw, 640px);
+      aspect-ratio: 1;
+      z-index: 2;
+    }
+
+    .portfolio-cover-section .glow {
+      position: absolute;
+      inset: 4.5%;
+      border-radius: 50%;
+      overflow: hidden;
+      opacity: 0;
+      background:
+        radial-gradient(circle at 50% 51%, rgba(26, 156, 220, .9) 0 18%, rgba(59, 174, 231, .76) 31%, rgba(140, 218, 246, .52) 54%, rgba(219, 247, 255, .14) 72%, rgba(255, 255, 255, 0) 100%),
+        radial-gradient(circle at 40% 38%, rgba(255, 255, 255, .52) 0 1px, transparent 1.6px),
+        radial-gradient(circle at 62% 64%, rgba(255, 255, 255, .5) 0 1px, transparent 1.7px),
+        radial-gradient(circle at 48% 72%, rgba(0, 143, 216, .22) 0 1.2px, transparent 2px);
+      background-size: 100% 100%, 7px 7px, 9px 9px, 11px 11px;
+      filter: blur(.15px);
+      transform: scale(1);
+      animation: glowArrive 1.2s ease .35s forwards;
+    }
+
+    .portfolio-cover-section .glow::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background:
+        repeating-radial-gradient(circle at 47% 49%, rgba(255, 255, 255, .3) 0 1px, transparent 1px 3px),
+        linear-gradient(90deg, rgba(255, 255, 255, .16), rgba(0, 130, 210, .06), rgba(255, 255, 255, .16));
+      mix-blend-mode: screen;
+      opacity: .46;
+    }
+
+    .portfolio-cover-section .orbit-shell {
+      --orbit-angle: 0deg;
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform-origin: 50% 50%;
+      transform: rotate(var(--orbit-angle));
+      animation:
+        orbitFade 900ms ease .65s forwards,
+        clockwise 18s linear 1.55s infinite;
+    }
+
+    .portfolio-cover-section .ring {
+      position: absolute;
+      inset: 3.5%;
+      z-index: 1;
+      border-radius: 50%;
+      background:
+        conic-gradient(
+          from -12deg,
+          var(--line) 0deg 68deg,
+          transparent 68deg 104deg,
+          var(--line) 104deg 194deg,
+          transparent 194deg 236deg,
+          var(--line) 236deg 288deg,
+          transparent 288deg 326deg,
+          var(--line) 326deg 360deg
+        );
+      -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 1.25px), #000 calc(100% - 1.25px) calc(100% - .1px), transparent 100%);
+      mask: radial-gradient(farthest-side, transparent calc(100% - 1.25px), #000 calc(100% - 1.25px) calc(100% - .1px), transparent 100%);
+    }
+
+    .portfolio-cover-section .line-cut {
+      position: absolute;
+      top: 9.4%;
+      right: 12.5%;
+      z-index: 3;
+      width: 9.5%;
+      height: 2.2%;
+      background: var(--paper);
+      transform: rotate(-50deg);
+      transform-origin: 50% 50%;
+      pointer-events: none;
+    }
+
+    .portfolio-cover-section .label {
+      position: absolute;
+      margin: 0;
+      color: #1f1f1f;
+      font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      font-size: clamp(16px, 1.25vw, 25px);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0;
+      white-space: nowrap;
+      z-index: 2;
+      transform: rotate(calc(var(--orbit-angle) * -1));
+      transform-origin: 50% 50%;
+    }
+
+    .portfolio-cover-section .label--sense {
+      left: 2.8%;
+      top: 25.5%;
+    }
+
+    .portfolio-cover-section .label--engineering {
+      right: -1.7%;
+      top: 54.5%;
+    }
+
+    .portfolio-cover-section .label--experience {
+      left: 9.5%;
+      bottom: 8.5%;
+    }
+
+    .portfolio-cover-section .openness {
+      position: absolute;
+      top: -14.5%;
+      right: -8%;
+      margin: 0;
+      z-index: 5;
+      color: #1f1f1f;
+      font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      font-size: clamp(16px, 1.2vw, 24px);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0;
+      white-space: nowrap;
+      opacity: 0;
+      animation: fadeIn 700ms ease 1.05s forwards;
+    }
+
+    .portfolio-cover-section .center-word {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      z-index: 3;
+      color: #fff;
+      font-family: "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      font-size: clamp(17px, 1.35vw, 26px);
+      font-weight: 700;
+      letter-spacing: 0;
+      opacity: 0;
+      animation: fadeIn 800ms ease .9s forwards;
+    }
+
+    .portfolio-cover-section .portfolio-title,
+    .portfolio-cover-section .portfolio-subtitle,
+    .portfolio-cover-section .slash,
+    .portfolio-cover-section .glow,
+    .portfolio-cover-section .orbit-shell,
+    .portfolio-cover-section .openness,
+    .portfolio-cover-section .center-word {
+      animation-play-state: paused;
+    }
+
+    .portfolio-cover-section.is-active .portfolio-title,
+    .portfolio-cover-section.is-active .portfolio-subtitle,
+    .portfolio-cover-section.is-active .slash,
+    .portfolio-cover-section.is-active .glow,
+    .portfolio-cover-section.is-active .orbit-shell,
+    .portfolio-cover-section.is-active .openness,
+    .portfolio-cover-section.is-active .center-word {
+      animation-play-state: running;
+    }
+
+    @keyframes drawSlash {
+      0% {
+        opacity: 0;
+        stroke-dashoffset: 1;
+      }
+
+      18% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 1;
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes orbitFade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes clockwise {
+      from { --orbit-angle: 0deg; }
+      to { --orbit-angle: 360deg; }
+    }
+
+    @keyframes glowArrive {
+      from {
+        opacity: 0;
+        transform: scale(.98);
+      }
+
+      to {
+        opacity: .98;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    @keyframes portfolioFadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes mobileGlowBreathe {
+      0%,
+      100% {
+        opacity: .55;
+        transform: scale(.98);
+        filter: blur(.08px) saturate(.9) brightness(.94);
+      }
+
+      50% {
+        opacity: .95;
+        transform: scale(1.03);
+        filter: blur(.45px) saturate(1.08) brightness(1.06);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .portfolio-cover-section {
+        overflow: hidden;
+      }
+
+      .portfolio-cover-section .portfolio-stage {
+        min-height: 100svh;
+      }
+
+      .portfolio-cover-section .slash-field {
+        z-index: 4;
+      }
+
+      .portfolio-cover-section .slash {
+        display: none;
+      }
+
+      .portfolio-cover-section .slash--mobile {
+        display: block;
+        stroke-width: 2;
+      }
+
+      .portfolio-cover-section .portfolio-title {
+        top: clamp(28px, 6.2svh, 58px);
+        left: auto;
+        right: 20px;
+        white-space: normal;
+        max-width: min(56vw, 320px);
+        font-size: clamp(56px, 16vw, 96px);
+        line-height: 1.08;
+        text-align: left;
+      }
+
+      .portfolio-cover-section .portfolio-subtitle {
+        left: 20px;
+        right: 20px;
+        bottom: clamp(24px, 5.4svh, 52px);
+        font-size: clamp(34px, 9vw, 54px);
+        word-spacing: clamp(12px, 3.8vw, 26px);
+      }
+
+      .portfolio-cover-section .orbit-area {
+        display: none;
+      }
+
+      .portfolio-cover-section .glow {
+        animation:
+          glowArrive 900ms ease .35s forwards,
+          mobileGlowBreathe 4.4s ease-in-out 1.25s infinite;
+        will-change: opacity, transform, filter;
+      }
+
+      .portfolio-cover-section .openness {
+        right: 0;
+        top: -16%;
+      }
+
+      .portfolio-cover-section .label {
+        font-size: 18px;
+      }
+    }
+
+    .content-hover-section {
+      display: grid;
+      place-items: center;
+      background: #f7f7f6;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+
+    .skill-map-section {
+      --ink: #050505;
+      --paper: #f7f7f6;
+      --line: #111;
+      --duration: 8200ms;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    
+
+    .skill-map-section .stage {
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      place-items: center;
+      background: var(--paper);
+    }
+.skill-map-section svg {
+      width: 100vw;
+      height: 56.25vw;
+      max-width: 177.7778vh;
+      max-height: 100vh;
+      display: block;
+      background: var(--paper);
+    }
+.skill-map-section text {
+      fill: var(--ink);
+      dominant-baseline: middle;
+      letter-spacing: 0;
+    }
+
+    .skill-map-section .title {
+      font-size: 40px;
+      font-weight: 400;
+      dominant-baseline: hanging;
+    }
+
+    .skill-map-section .arc-char {
+      font-size: 36px;
+      font-weight: 400;
+      opacity: 0;
+      dominant-baseline: hanging;
+    }
+
+    .skill-map-section .category,
+    .skill-map-section .skill {
+      font-size: 34px;
+      font-weight: 400;
+      opacity: 0;
+    }
+
+    .skill-map-section .skill {
+      font-size: 34px;
+      clip-path: inset(-24px 100% -24px 0);
+    }
+
+    .skill-map-section .arrow-line,
+    .skill-map-section .ray,
+    .skill-map-section .branch {
+      fill: none;
+      stroke: var(--line);
+      stroke-width: 1;
+      stroke-linecap: butt;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .skill-map-section .arrow-line {
+      stroke-dasharray: 260;
+      stroke-dashoffset: 260;
+      animation: draw 650ms ease-out 500ms forwards;
+    }
+
+    .skill-map-section .arrow-head {
+      fill: var(--line);
+      opacity: 0;
+      animation: appear 120ms linear 1060ms forwards;
+    }
+
+    .skill-map-section .origin-dot {
+      fill: var(--ink);
+      opacity: 0;
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: dotPop 280ms cubic-bezier(.2, .9, .25, 1.2) 2350ms forwards;
+    }
+
+    .skill-map-section .ray,
+    .skill-map-section .branch {
+      stroke-dasharray: var(--len);
+      stroke-dashoffset: var(--len);
+      stroke-opacity: .7;
+    }
+
+    .skill-map-section .a1 { animation: labelIn 220ms ease-out 760ms forwards; }
+    .skill-map-section .a2 { animation: labelIn 220ms ease-out 920ms forwards; }
+    .skill-map-section .a3 { animation: labelIn 220ms ease-out 1080ms forwards; }
+    .skill-map-section .a4 { animation: labelIn 220ms ease-out 1240ms forwards; }
+    .skill-map-section .a5 { animation: labelIn 220ms ease-out 1400ms forwards; }
+    .skill-map-section .a6 { animation: labelIn 220ms ease-out 1560ms forwards; }
+    .skill-map-section .a7 { animation: labelIn 220ms ease-out 1720ms forwards; }
+    .skill-map-section .a8 { animation: labelIn 220ms ease-out 1880ms forwards; }
+
+    .skill-map-section .r1 { animation: draw 620ms cubic-bezier(.55, 0, .25, 1) 2680ms forwards; }
+    .skill-map-section .c1 { animation: labelIn 260ms ease-out 3340ms forwards; }
+    .skill-map-section .b1 { animation: draw 320ms cubic-bezier(.55, 0, .25, 1) 3650ms forwards; }
+    .skill-map-section .s1 { animation: revealText 430ms ease-out 4020ms forwards; }
+
+    .skill-map-section .r2 { animation: draw 600ms cubic-bezier(.55, 0, .25, 1) 4500ms forwards; }
+    .skill-map-section .c2 { animation: labelIn 260ms ease-out 5140ms forwards; }
+    .skill-map-section .b2 { animation: draw 300ms cubic-bezier(.55, 0, .25, 1) 5450ms forwards; }
+    .skill-map-section .s2 { animation: revealText 430ms ease-out 5800ms forwards; }
+
+    .skill-map-section .r3 { animation: draw 580ms cubic-bezier(.55, 0, .25, 1) 6280ms forwards; }
+    .skill-map-section .c3 { animation: labelIn 260ms ease-out 6900ms forwards; }
+    .skill-map-section .b3 { animation: draw 300ms cubic-bezier(.55, 0, .25, 1) 7210ms forwards; }
+    .skill-map-section .s3 { animation: revealText 430ms ease-out 7560ms forwards; }
+
+    .skill-map-section .r4 { animation: draw 580ms cubic-bezier(.55, 0, .25, 1) 8040ms forwards; }
+    .skill-map-section .c4 { animation: labelIn 260ms ease-out 8660ms forwards; }
+    .skill-map-section .b4 { animation: draw 280ms cubic-bezier(.55, 0, .25, 1) 8970ms forwards; }
+    .skill-map-section .s4 { animation: revealText 430ms ease-out 9300ms forwards; }
+
+    .skill-map-section .r5 { animation: draw 600ms cubic-bezier(.55, 0, .25, 1) 9780ms forwards; }
+    .skill-map-section .c5 { animation: labelIn 260ms ease-out 10420ms forwards; }
+    .skill-map-section .b5 { animation: draw 300ms cubic-bezier(.55, 0, .25, 1) 10730ms forwards; }
+    .skill-map-section .s5 { animation: revealText 430ms ease-out 11080ms forwards; }
+
+    .skill-map-section .r6 { animation: draw 620ms cubic-bezier(.55, 0, .25, 1) 11560ms forwards; }
+    .skill-map-section .c6 { animation: labelIn 260ms ease-out 12220ms forwards; }
+    .skill-map-section .b6 { animation: draw 320ms cubic-bezier(.55, 0, .25, 1) 12530ms forwards; }
+    .skill-map-section .s6 { animation: revealText 430ms ease-out 12900ms forwards; }
+
+    .skill-map-section .mask-reveal line {
+      stroke: #fff;
+      stroke-width: 72;
+      stroke-linecap: butt;
+      transform-box: fill-box;
+      transform-origin: left center;
+      transform: scaleX(0);
+    }
+
+    .skill-map-section .m1 { animation: maskGrow 430ms ease-out 4020ms forwards; }
+    .skill-map-section .m2 { animation: maskGrow 430ms ease-out 5800ms forwards; }
+    .skill-map-section .m3 { animation: maskGrow 430ms ease-out 7560ms forwards; }
+    .skill-map-section .m4 { animation: maskGrow 430ms ease-out 9300ms forwards; }
+    .skill-map-section .m5 { animation: maskGrow 430ms ease-out 11080ms forwards; }
+    .skill-map-section .m6 { animation: maskGrow 430ms ease-out 12900ms forwards; }
+
+    .skill-map-section .arrow-line,
+    .skill-map-section .arrow-head,
+    .skill-map-section .origin-dot,
+    .skill-map-section .arc-char,
+    .skill-map-section .ray,
+    .skill-map-section .branch,
+    .skill-map-section .category,
+    .skill-map-section .skill,
+    .skill-map-section .mask-reveal line {
+      animation-play-state: paused;
+    }
+
+    .skill-map-section.is-active .arrow-line,
+    .skill-map-section.is-active .arrow-head,
+    .skill-map-section.is-active .origin-dot,
+    .skill-map-section.is-active .arc-char,
+    .skill-map-section.is-active .ray,
+    .skill-map-section.is-active .branch,
+    .skill-map-section.is-active .category,
+    .skill-map-section.is-active .skill,
+    .skill-map-section.is-active .mask-reveal line {
+      animation-play-state: running;
+    }
+
+    @keyframes draw {
+      to { stroke-dashoffset: 0; }
+    }
+
+    @keyframes appear {
+      to { opacity: 1; }
+    }
+
+    @keyframes arcFade {
+      to { opacity: 1; }
+    }
+
+    @keyframes dotPop {
+      0% { opacity: 0; transform: scale(.2); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes labelIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes revealText {
+      0% { opacity: 0; clip-path: inset(-24px 100% -24px 0); }
+      1% { opacity: 1; }
+      100% { opacity: 1; clip-path: inset(-24px 0 -24px 0); }
+    }
+
+    @keyframes maskGrow {
+      to { transform: scaleX(1); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-delay: 0ms !important;
+        animation-duration: 1ms !important;
+      }
+    }
+  
+
+
+    .content-hover-section {
+      --paper: #f7f7f6;
+      --teal: #2f8390;
+      --teal-soft: #5f9aa0;
+      --gray: #9c9c9c;
+      --orange: #c94e0c;
+      --closed: 5.73cqw;
+      --open: 10.85cqw;
+      --panel-top: 5.25cqw;
+      --panel-h: 25cqw;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    
+
+    .content-hover-section .slide {
+      container-type: inline-size;
+      position: relative;
+      width: min(100vw, calc(100vh * 16 / 9));
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: var(--paper);
+      color: var(--teal);
+    }
+
+    .content-hover-section .track {
+      position: absolute;
+      inset: 9.65cqw 5.62cqw auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0;
+    }
+
+    .content-hover-section .item {
+      --panel-w: var(--closed);
+      display: block;
+      position: relative;
+      z-index: 1;
+      flex: 0 0 var(--panel-w);
+      width: var(--panel-w);
+      color: inherit;
+      text-decoration: none;
+      transition:
+        width 460ms cubic-bezier(.2, .75, .2, 1),
+        flex-basis 460ms cubic-bezier(.2, .75, .2, 1);
+    }
+
+    .content-hover-section:not(.is-visible) .item {
+      opacity: 0;
+    }
+
+    .content-hover-section .i1,
+    .content-hover-section .i3,
+    .content-hover-section .i5,
+    .content-hover-section .i7 {
+      --entry-y: 7.2cqw;
+    }
+
+    .content-hover-section .i2,
+    .content-hover-section .i4,
+    .content-hover-section .i6 {
+      --entry-y: -7.2cqw;
+    }
+
+    .content-hover-section.is-visible .item {
+      animation: contentItemIn 1260ms cubic-bezier(.2, .78, .18, 1) both;
+      animation-play-state: paused;
+    }
+
+    .content-hover-section.is-visible.is-active .item {
+      animation-play-state: running;
+    }
+
+    .content-hover-section.is-visible .i1 { animation-delay: 80ms; }
+    .content-hover-section.is-visible .i2 { animation-delay: 150ms; }
+    .content-hover-section.is-visible .i3 { animation-delay: 220ms; }
+    .content-hover-section.is-visible .i4 { animation-delay: 290ms; }
+    .content-hover-section.is-visible .i5 { animation-delay: 360ms; }
+    .content-hover-section.is-visible .i6 { animation-delay: 430ms; }
+    .content-hover-section.is-visible .i7 { animation-delay: 500ms; }
+
+    .content-hover-section.is-entry-complete .item:hover,
+    .content-hover-section.is-entry-complete .item:focus-within {
+      --panel-w: var(--open);
+      z-index: 5;
+    }
+
+    .content-hover-section .letter {
+      height: var(--panel-top);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      color: var(--teal-soft);
+      font-size: 4.62cqw;
+      font-weight: 300;
+      line-height: .95;
+      letter-spacing: 0;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .content-hover-section .panel {
+      position: relative;
+      width: 100%;
+      height: var(--panel-h);
+      border: 0;
+      padding: 0;
+      display: block;
+      overflow: hidden;
+      cursor: pointer;
+      background-image: var(--image);
+      background-size: 100% 100%;
+      background-position: center;
+      background-repeat: no-repeat;
+      outline: none;
+      transition:
+        filter 360ms ease,
+        box-shadow 360ms ease;
+    }
+
+    .content-hover-section.is-entry-complete .item:hover .panel,
+    .content-hover-section.is-entry-complete .item:focus-within .panel {
+      filter: saturate(1.04) contrast(1.02);
+      box-shadow: 0 1.1cqw 2.6cqw rgba(42, 66, 70, .13);
+    }
+
+    .content-hover-section .item.is-loading .panel {
+      filter: saturate(1.06) contrast(1.04) brightness(.97);
+    }
+
+    .content-hover-section .panel:focus-visible {
+      outline: .12cqw solid rgba(47, 131, 144, .65);
+      outline-offset: .22cqw;
+    }
+
+    .content-hover-section .index {
+      margin-top: 1.35cqw;
+      color: var(--teal-soft);
+      font-size: 4.02cqw;
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: 0;
+      text-align: center;
+      user-select: none;
+    }
+
+    .content-hover-section .label {
+      position: absolute;
+      z-index: 2;
+      margin: 0;
+      font-size: 1.58cqw;
+      font-weight: 760;
+      line-height: 1.28;
+      letter-spacing: 0;
+      color: var(--teal);
+      pointer-events: auto;
+      white-space: normal;
+    }
+
+    .content-hover-section .label.cn {
+      font-family: "STZhongsong", "华文中宋", "Songti SC", SimSun, serif;
+      color: var(--gray);
+      font-weight: 560;
+      line-height: 1.22;
+    }
+
+    .content-hover-section .label.orange {
+      color: var(--orange);
+    }
+
+    .content-hover-section .rule {
+      position: absolute;
+      z-index: 1;
+      width: .08cqw;
+      height: 7.75cqw;
+      background: rgba(130, 178, 179, .7);
+      pointer-events: none;
+    }
+
+    .content-hover-section .more {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      color: var(--teal);
+      font-size: 1.95cqw;
+      font-weight: 760;
+      line-height: 1;
+      letter-spacing: .34em;
+    }
+
+    .content-hover-section .mask {
+      position: absolute;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .content-hover-section .m-soft {
+      background: linear-gradient(90deg, rgba(235, 233, 227, .96), rgba(243, 241, 237, .96));
+    }
+
+    .content-hover-section .m-warm {
+      background: linear-gradient(90deg, rgba(240, 233, 224, .96), rgba(247, 241, 232, .97));
+    }
+
+    .content-hover-section .m-paper {
+      background: rgba(245, 239, 232, .96);
+    }
+
+    .content-hover-section .i1 { --image: url("assets/panel-01.png"); }
+    .content-hover-section .i2 { --image: url("assets/panel-02.png"); }
+    .content-hover-section .i3 { --image: url("assets/panel-03.png"); }
+    .content-hover-section .i4 { --image: url("assets/panel-04.png"); }
+    .content-hover-section .i5 { --image: url("assets/panel-05.png"); }
+    .content-hover-section .i6 { --image: url("assets/panel-06.png"); }
+    .content-hover-section .i7 { --image: url("assets/panel-more.png"); }
+
+    .content-hover-section .i1 .title { top: calc(var(--panel-top) + 1.82cqw); left: 3.78cqw; width: 6.4cqw; }
+    .content-hover-section .i1 .cn { top: calc(var(--panel-top) + 21.05cqw); left: 6.45cqw; width: 3.2cqw; }
+    .content-hover-section .i1 .mask-a { top: 6%; left: 62%; width: 42%; height: 25%; }
+
+    .content-hover-section .i2 .cn-top { top: calc(var(--panel-top) + 1.42cqw); left: 6.48cqw; width: 3.4cqw; }
+    .content-hover-section .i2 .rule { top: calc(var(--panel-top) + 6.15cqw); left: 6.9cqw; height: 8.95cqw; }
+    .content-hover-section .i2 .title { top: calc(var(--panel-top) + 17.75cqw); left: 6.08cqw; width: 8.25cqw; }
+
+    .content-hover-section .i3 .title { top: calc(var(--panel-top) + 1.84cqw); left: 3.98cqw; width: 6.95cqw; }
+    .content-hover-section .i3 .cn { top: calc(var(--panel-top) + 21.05cqw); left: 6.62cqw; width: 3.4cqw; }
+    .content-hover-section .i3 .mask-a { top: 4%; left: 63%; width: 43%; height: 27%; }
+
+    .content-hover-section .i4 .title { top: calc(var(--panel-top) + 6.5cqw); left: 2.18cqw; width: 7.2cqw; }
+    .content-hover-section .i4 .rule { top: calc(var(--panel-top) + 12.55cqw); left: 6.78cqw; height: 7.85cqw; background: rgba(217, 129, 83, .58); }
+    .content-hover-section .i4 .cn { top: calc(var(--panel-top) + 21.12cqw); left: 6.45cqw; width: 3.7cqw; }
+    .content-hover-section .i4 .mask-a { top: 24%; left: 31%; width: 71%; height: 25%; }
+
+    .content-hover-section .i5 .title { top: calc(var(--panel-top) + 2.38cqw); left: 3.27cqw; width: 6.6cqw; }
+    .content-hover-section .i5 .cn { top: calc(var(--panel-top) + 19.25cqw); left: 6.04cqw; width: 3.7cqw; }
+    .content-hover-section .i5 .mask-a { top: 4%; left: 50%; width: 52%; height: 29%; }
+
+    .content-hover-section .i6 .cn { top: calc(var(--panel-top) + 12.54cqw); left: 6.22cqw; width: 3.5cqw; }
+    .content-hover-section .i6 .title { top: calc(var(--panel-top) + 18.93cqw); left: 6.16cqw; width: 5.6cqw; }
+
+    .content-hover-section .i7 .more { top: calc(var(--panel-top) + 17.16cqw); left: 6.63cqw; }
+
+    @media (max-aspect-ratio: 4 / 5) {
+      .content-hover-section {
+        --closed: 17cqw;
+        --open: 17cqw;
+        --panel-top: 7cqw;
+        --panel-h: 37cqw;
+      }
+
+      .content-hover-section .slide {
+        width: 100vw;
+        min-height: 100svh;
+        aspect-ratio: auto;
+        overflow: hidden;
+      }
+
+      .content-hover-section .track {
+        inset: 18svh 20px auto;
+        width: auto;
+        min-width: 0;
+        display: block;
+        height: 108cqw;
+      }
+
+      .content-hover-section .item {
+        position: absolute;
+        flex: 0 0 var(--closed);
+        width: var(--closed);
+      }
+
+      .content-hover-section .i1 { top: 0; left: 0; }
+      .content-hover-section .i2 { top: 0; left: calc((100% - var(--closed)) / 3); }
+      .content-hover-section .i3 { top: 0; left: calc((100% - var(--closed)) * 2 / 3); }
+      .content-hover-section .i4 { top: 0; left: calc(100% - var(--closed)); }
+      .content-hover-section .i5 { top: 56cqw; left: calc((100% - var(--closed)) / 6); }
+      .content-hover-section .i6 { top: 56cqw; left: calc((100% - var(--closed)) * 3 / 6); }
+      .content-hover-section .i7 { top: 56cqw; left: calc((100% - var(--closed)) * 5 / 6); }
+
+      .content-hover-section.is-entry-complete .item:hover,
+      .content-hover-section.is-entry-complete .item:focus-within {
+        --panel-w: var(--closed);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .content-hover-section .item,
+      .content-hover-section .panel {
+        transition: none;
+      }
+
+      .content-hover-section:not(.is-visible) .item {
+        opacity: 1;
+      }
+
+      .content-hover-section.is-visible .item {
+        animation: none;
+      }
+    }
+
+    @keyframes contentItemIn {
+      0% {
+        opacity: 0;
+        transform: translateY(var(--entry-y));
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .maintenance-section {
+      container-type: inline-size;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: #f7f7f6;
+      color: #525963;
+      font-family: Poppins, "Source Han Sans SC", "Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    .maintenance-card {
+      position: relative;
+      width: min(calc(100vw - 40px), calc((100vh - 40px) * 16 / 9));
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #f7f7f6;
+    }
+
+    .maintenance-kicker {
+      position: absolute;
+      left: 12.14cqw;
+      top: 3.54cqw;
+      width: 8.39cqw;
+      color: #a8a8a8;
+      font-size: 0.94cqw;
+      font-weight: 700;
+      line-height: 1.18;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .maintenance-title {
+      position: absolute;
+      left: 12.14cqw;
+      top: 8.39cqw;
+      width: 29.64cqw;
+      margin: 0;
+      color: #002452;
+      font-size: 3.13cqw;
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .maintenance-lead {
+      position: absolute;
+      left: 12.14cqw;
+      top: 15.1cqw;
+      width: 27.19cqw;
+      margin: 0;
+      color: #525963;
+      font-size: 1.77cqw;
+      font-weight: 300;
+      line-height: 1.47;
+      letter-spacing: 0;
+    }
+
+    .maintenance-lead p {
+      margin: 0;
+    }
+
+    .maintenance-block {
+      position: absolute;
+      left: 12.14cqw;
+      width: 27.19cqw;
+      height: 3.07cqw;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .maintenance-study { top: 25.83cqw; }
+    .maintenance-master { top: 30.78cqw; }
+    .maintenance-output { top: 35.73cqw; }
+
+    .maintenance-heading {
+      position: absolute;
+      left: 0;
+      top: 0;
+      margin: 0;
+      color: #002452;
+      font-size: 1.09cqw;
+      font-weight: 800;
+      line-height: 1.25;
+      text-transform: uppercase;
+      letter-spacing: .16em;
+    }
+
+    .maintenance-text {
+      position: absolute;
+      left: 0;
+      top: 1.61cqw;
+      width: 27.19cqw;
+      margin: 0;
+      color: #525963;
+      font-size: 1.15cqw;
+      font-weight: 400;
+      line-height: 1.32;
+    }
+
+    .maintenance-contact {
+      top: 40.68cqw;
+      height: 8.54cqw;
+      margin: 0;
+    }
+
+    .maintenance-contact .maintenance-heading {
+      top: .36cqw;
+    }
+
+    .maintenance-contact .maintenance-text {
+      top: 1.93cqw;
+      width: 20.57cqw;
+    }
+
+    .maintenance-footer {
+      position: absolute;
+      left: 12.14cqw;
+      top: 52.76cqw;
+      width: 27.19cqw;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      color: #a6a6a6;
+      font-family: Lato, Poppins, "PingFang SC", Arial, sans-serif;
+      font-size: .94cqw;
+      line-height: 1.5;
+      white-space: nowrap;
+    }
+
+    .maintenance-top-rule,
+    .maintenance-bottom-rule {
+      position: absolute;
+      left: 12.14cqw;
+      width: 29.17cqw;
+      background: #eee;
+    }
+
+    .maintenance-top-rule {
+      top: 5.42cqw;
+      height: .21cqw;
+    }
+
+    .maintenance-bottom-rule {
+      top: 51.93cqw;
+      height: .1cqw;
+    }
+
+    .maintenance-line {
+      opacity: 0;
+      transform: translateY(22px);
+      animation: maintenanceFadeUp 760ms cubic-bezier(.22, 1, .36, 1) both paused;
+      animation-delay: var(--delay, 0ms);
+    }
+
+    .maintenance-section.is-active .maintenance-line {
+      animation-play-state: running;
+    }
+
+    @keyframes maintenanceFadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .maintenance-section {
+        min-height: 100vh;
+        place-items: center;
+      }
+
+      .maintenance-card {
+        width: min(calc(100vw - 40px), calc((100vh - 40px) * 497 / 1080));
+        min-width: min(457px, calc(100vw - 40px));
+        height: auto;
+        aspect-ratio: 497 / 1080;
+      }
+
+      .maintenance-kicker {
+        left: 8.05cqw;
+        top: 8.05cqw;
+        width: 32.39cqw;
+        height: 4.23cqw;
+        font-size: 3.62cqw;
+        line-height: 1.18;
+      }
+
+      .maintenance-title {
+        left: 8.05cqw;
+        top: 23.34cqw;
+        width: 76.46cqw;
+        font-size: 9.66cqw;
+        line-height: 12.07cqw;
+      }
+
+      .maintenance-lead {
+        left: 8.05cqw;
+        top: 58.55cqw;
+        width: 64.39cqw;
+        font-size: 6.84cqw;
+        line-height: 10.06cqw;
+      }
+
+      .maintenance-heading {
+        position: static;
+        font-size: 3.22cqw;
+        line-height: 1.25;
+      }
+
+      .maintenance-text {
+        position: static;
+        width: auto;
+        font-size: 3.22cqw;
+        line-height: 5.84cqw;
+      }
+
+      .maintenance-study,
+      .maintenance-master,
+      .maintenance-output {
+        display: none;
+      }
+
+      .maintenance-contact {
+        left: 8.05cqw;
+        top: 170.62cqw;
+        width: 53.92cqw;
+        height: 33cqw;
+        padding: 1.41cqw 0;
+        display: flex;
+        flex-direction: column;
+        gap: .4cqw;
+        overflow: hidden;
+      }
+
+      .maintenance-contact .maintenance-heading {
+        letter-spacing: .6cqw;
+      }
+
+      .maintenance-contact .maintenance-text {
+        white-space: nowrap;
+      }
+
+      .maintenance-footer {
+        left: 8.05cqw;
+        top: 206.84cqw;
+        width: 83.9cqw;
+        font-size: 3.22cqw;
+        line-height: 5.43cqw;
+        white-space: normal;
+      }
+
+      .maintenance-top-rule {
+        left: 8.05cqw;
+        top: 15.29cqw;
+        width: 83.9cqw;
+        height: max(1px, .2cqw);
+      }
+
+      .maintenance-bottom-rule {
+        left: 8.05cqw;
+        top: 205.23cqw;
+        width: 83.9cqw;
+        height: max(1px, .2cqw);
+      }
+    }
+  
+  </style>
+</head>
+<body>
+  <div class="page-stack">
+    <section class="portfolio-cover-section" aria-label="Personal Portfolio 封面">
+      <main class="portfolio-stage" aria-label="Personal Portfolio animated cover">
+        <h1 class="portfolio-title">Personal Portfolio</h1>
+        <p class="portfolio-subtitle">个 人 作 品 集</p>
+
+        <svg class="slash-field" viewBox="0 0 1920 1080" preserveAspectRatio="none" aria-hidden="true">
+          <line class="slash" pathLength="1" x1="230" y1="860" x2="684" y2="304" />
+          <line class="slash slash--right" pathLength="1" x1="1638" y1="286" x2="1396" y2="573" />
+          <line class="slash slash--mobile" pathLength="1" x1="520" y1="830" x2="1290" y2="370" />
+        </svg>
+
+        <section class="orbit-area" aria-label="Portfolio abilities orbit">
+          <p class="openness">开放式/多元化</p>
+          <div class="glow" aria-hidden="true"></div>
+          <div class="orbit-shell" aria-hidden="true">
+            <div class="ring"></div>
+            <p class="label label--sense">感知交互</p>
+            <p class="label label--engineering">工程开发</p>
+            <p class="label label--experience">用户体验</p>
+          </div>
+          <div class="line-cut" aria-hidden="true"></div>
+          <div class="center-word">All</div>
+        </section>
+      </main>
+    </section>
+
+    <section class="skill-map-section">
+      <main class="stage" aria-label="能力拆解动画">
+          <svg viewBox="0 0 1920 1080" role="img" aria-labelledby="title desc">
+            <title id="title">能力拆解 SVG 路径动画</title>
+            <desc id="desc">弧形文字先沿路径展开，随后多条线从中心点依次发散，最后技能文字按线条方向延伸出现。</desc>
+      
+            <defs>
+              <mask id="skillMask1" maskUnits="userSpaceOnUse">
+                <rect width="1920" height="1080" fill="black" />
+                <g class="mask-reveal" transform="translate(728 540) rotate(-25)">
+                  <line class="m1" x1="846" y1="0" x2="1120" y2="0" />
+                </g>
+              </mask>
+              <mask id="skillMask2" maskUnits="userSpaceOnUse">
+                <rect width="1920" height="1080" fill="black" />
+                <g class="mask-reveal" transform="translate(728 540) rotate(-15)">
+                  <line class="m2" x1="846" y1="0" x2="1120" y2="0" />
+                </g>
+              </mask>
+              <mask id="skillMask3" maskUnits="userSpaceOnUse">
+                <rect width="1920" height="1080" fill="black" />
+                <g class="mask-reveal" transform="translate(728 540) rotate(-5)">
+                  <line class="m3" x1="846" y1="0" x2="1120" y2="0" />
+                </g>
+              </mask>
+              <mask id="skillMask4" maskUnits="userSpaceOnUse">
+                <rect width="1920" height="1080" fill="black" />
+                <g class="mask-reveal" transform="translate(728 540) rotate(5)">
+                  <line class="m4" x1="870" y1="0" x2="1128" y2="0" />
+                </g>
+              </mask>
+              <mask id="skillMask5" maskUnits="userSpaceOnUse">
+                <rect width="1920" height="1080" fill="black" />
+                <g class="mask-reveal" transform="translate(728 540) rotate(15)">
+                  <line class="m5" x1="914" y1="0" x2="1180" y2="0" />
+                </g>
+              </mask>
+              <mask id="skillMask6" maskUnits="userSpaceOnUse">
+                <rect width="1920" height="1080" fill="black" />
+                <g class="mask-reveal" transform="translate(728 540) rotate(26.1)">
+                  <line class="m6" x1="914" y1="0" x2="1180" y2="0" />
+                </g>
+              </mask>
+            </defs>
+      
+            <text class="title" x="99" y="518">能力拆解</text>
+            <path class="arrow-line" d="M 291 540 H 548" />
+            <path class="arrow-head" d="M 548 536 L 555 540 L 548 544 Z" />
+      
+            <g class="arc-chars" aria-label="个人基础能力拆解">
+              <text class="arc-char a1" x="584.71" y="311" transform="rotate(50 584.71 311)">个</text>
+              <text class="arc-char a2" x="627.48" y="366.33" transform="rotate(61 627.48 366.33)">人</text>
+              <text class="arc-char a3" x="659.22" y="428.65" transform="rotate(71 659.22 428.65)">基</text>
+              <text class="arc-char a4" x="678.82" y="495.78" transform="rotate(82 678.82 495.78)">础</text>
+              <text class="arc-char a5" x="685.60" y="565.39" transform="rotate(93 685.60 565.39)">能</text>
+              <text class="arc-char a6" x="679.31" y="635.04" transform="rotate(104 679.31 635.04)">力</text>
+              <text class="arc-char a7" x="660.20" y="702.31" transform="rotate(114 660.20 702.31)">拆</text>
+              <text class="arc-char a8" x="628.90" y="764.86" transform="rotate(125 628.90 764.86)">解</text>
+            </g>
+      
+            <circle class="origin-dot" cx="728" cy="540" r="2.1" />
+      
+            <g class="network">
+              <g transform="translate(728 540) rotate(-25)">
+                <line class="ray r1" style="--len: 620" x1="0" y1="0" x2="620" y2="0" />
+                <line class="branch b1" style="--len: 90" x1="728" y1="0" x2="818" y2="0" />
+              </g>
+      
+              <g transform="translate(728 540) rotate(-15)">
+                <line class="ray r2" style="--len: 620" x1="0" y1="0" x2="620" y2="0" />
+                <line class="branch b2" style="--len: 90" x1="728" y1="0" x2="818" y2="0" />
+              </g>
+      
+              <g transform="translate(728 540) rotate(-5)">
+                <line class="ray r3" style="--len: 620" x1="0" y1="0" x2="620" y2="0" />
+                <line class="branch b3" style="--len: 90" x1="728" y1="0" x2="818" y2="0" />
+              </g>
+      
+              <g transform="translate(728 540) rotate(5)">
+                <line class="ray r4" style="--len: 620" x1="0" y1="0" x2="620" y2="0" />
+                <line class="branch b4" style="--len: 90" x1="762" y1="0" x2="852" y2="0" />
+              </g>
+      
+              <g transform="translate(728 540) rotate(15)">
+                <line class="ray r5" style="--len: 620" x1="0" y1="0" x2="620" y2="0" />
+                <line class="branch b5" style="--len: 90" x1="796" y1="0" x2="886" y2="0" />
+              </g>
+      
+              <g transform="translate(728 540) rotate(26.1)">
+                <line class="ray r6" style="--len: 620" x1="0" y1="0" x2="620" y2="0" />
+                <line class="branch b6" style="--len: 90" x1="796" y1="0" x2="886" y2="0" />
+              </g>
+            </g>
+      
+            <g class="labels">
+              <g transform="translate(728 540) rotate(-25)">
+                <text class="category c1" x="640" y="0">平面</text>
+                <text class="skill s1" x="838" y="0">Adobe系列</text>
+              </g>
+      
+              <g transform="translate(728 540) rotate(-15)">
+                <text class="category c2" x="640" y="0">交互</text>
+                <text class="skill s2" x="838" y="0">Figma|Framer</text>
+              </g>
+      
+              <g transform="translate(728 540) rotate(-5)">
+                <text class="category c3" x="640" y="0">建模</text>
+                <text class="skill s3" x="838" y="0">C4D/Rhino</text>
+              </g>
+      
+              <g transform="translate(728 540) rotate(5)">
+                <text class="category c4" x="640" y="0">AI辅助</text>
+                <text class="skill s4" x="872" y="0">Agent搭建</text>
+              </g>
+      
+              <g transform="translate(728 540) rotate(15)">
+                <text class="category c5" x="640" y="0">算法爬虫</text>
+                <text class="skill s5" x="906" y="0">Python/C++</text>
+              </g>
+      
+              <g transform="translate(728 540) rotate(26.1)">
+                <text class="category c6" x="640" y="0">硬件开发</text>
+                <text class="skill s6" x="906" y="0">Arduino</text>
+              </g>
+            </g>
+          </svg>
+        </main>
+    </section>
+
+    <section class="content-hover-section">
+      <main class="slide" aria-label="交互式内容目录">
+          <div class="track">
+            <a class="item i1" href="https://cnn-explainer-portfolio-thosecs-projects.vercel.app/" aria-label="CNN visual analysis">
+              <div class="letter">C</div>
+              <span class="panel" aria-hidden="true">
+                <span class="mask mask-a m-soft"></span>
+              </span>
+              <p class="label title">CNN<br>visual<br>analysis</p>
+              <p class="label cn">技术<br>翻译</p>
+              <div class="index">01</div>
+            </a>
+      
+            <a class="item i2" href="https://daily-three-iota.vercel.app" aria-label="Full-process interface setup">
+              <div class="letter">O</div>
+              <span class="panel" aria-hidden="true"></span>
+              <p class="label cn cn-top">初创<br>实习</p>
+              <span class="rule"></span>
+              <p class="label title">Full-<br>process<br>interface<br>setup</p>
+              <div class="index">02</div>
+            </a>
+      
+            <a class="item i3" href="https://https-www-savor-it-1-1.vercel.app" aria-label="Nestle official website">
+              <div class="letter">N</div>
+              <span class="panel" aria-hidden="true">
+                <span class="mask mask-a m-soft"></span>
+              </span>
+              <p class="label title">Nestlé<br>official<br>website</p>
+              <p class="label cn">雀巢<br>网站</p>
+              <div class="index">03</div>
+            </a>
+      
+            <section class="item i4" aria-label="Tencent WXG Internship">
+              <div class="letter">T</div>
+              <button class="panel" aria-label="Tencent WXG Internship">
+                <span class="mask mask-a m-warm"></span>
+              </button>
+              <p class="label title orange">Tencent<br>WXG<br>Internship</p>
+              <span class="rule"></span>
+              <p class="label cn">腾讯<br>实习</p>
+              <div class="index">04</div>
+            </section>
+      
+            <section class="item i5" aria-label="Harvard Hackathon">
+              <div class="letter">E</div>
+              <button class="panel" aria-label="Harvard Hackathon">
+                <span class="mask mask-a m-paper"></span>
+              </button>
+              <p class="label title">Harvard<br>Hackat<br>-hon</p>
+              <p class="label cn">黑<br>客<br>松</p>
+              <div class="index">05</div>
+            </section>
+      
+            <a class="item i6" href="https://outputs-one-silk.vercel.app" aria-label="Web Crawler Practic">
+              <div class="letter">N</div>
+              <span class="panel" aria-hidden="true"></span>
+              <p class="label cn">爬虫<br>体验</p>
+              <p class="label title">Web<br>Crawler<br>Practic</p>
+              <div class="index">06</div>
+            </a>
+      
+            <section class="item i7" aria-label="More">
+              <div class="letter">T</div>
+              <button class="panel" aria-label="More"></button>
+              <p class="label more">MORE</p>
+              <div class="index">--</div>
+            </section>
+          </div>
+        </main>
+    </section>
+
+    <section class="maintenance-section" aria-label="后续更新提示">
+      <main class="maintenance-card">
+        <span class="maintenance-top-rule" aria-hidden="true"></span>
+        <span class="maintenance-bottom-rule" aria-hidden="true"></span>
+        <div class="maintenance-line maintenance-kicker" style="--delay: 80ms">文件更新中.....</div>
+
+        <h2 class="maintenance-line maintenance-title" style="--delay: 170ms">敬请期待后续更新.....</h2>
+
+        <div class="maintenance-lead">
+          <p class="maintenance-line" style="--delay: 260ms">系统维护中</p>
+          <p class="maintenance-line" style="--delay: 350ms">请稍后....</p>
+        </div>
+
+        <section class="maintenance-block maintenance-study">
+          <h3 class="maintenance-line maintenance-heading" style="--delay: 440ms">我们将学习</h3>
+          <p class="maintenance-line maintenance-text" style="--delay: 530ms">更前卫的思考方式，更高效的办事流程</p>
+        </section>
+
+        <section class="maintenance-block maintenance-master">
+          <h3 class="maintenance-line maintenance-heading" style="--delay: 620ms">我们将掌握</h3>
+          <p class="maintenance-line maintenance-text" style="--delay: 710ms">更多的软件技能，更熟练的技术操作</p>
+        </section>
+
+        <section class="maintenance-block maintenance-output">
+          <h3 class="maintenance-line maintenance-heading" style="--delay: 800ms">我们将产出</h3>
+          <p class="maintenance-line maintenance-text" style="--delay: 890ms">更加优秀完整的视觉作品，更加完善的用户体验服务</p>
+        </section>
+
+        <section class="maintenance-block maintenance-contact">
+          <h3 class="maintenance-line maintenance-heading" style="--delay: 980ms">催更联系方式</h3>
+          <p class="maintenance-line maintenance-text" style="--delay: 1070ms">电话联系：15773391159<br>邮箱联系：825833251@qq.com<br>　　　　　　thoesc086@gmail.com<br>微信联系：cyh15773391159</p>
+        </section>
+
+        <footer class="maintenance-line maintenance-footer" style="--delay: 1430ms">
+          [Yahui Chen]　|　Product Design Portfolio　|　[2026.5.04]
+        </footer>
+      </main>
+    </section>
+  </div>
+  <script>
+    (() => {
+      const sections = document.querySelectorAll(".portfolio-cover-section, .skill-map-section, .content-hover-section, .maintenance-section");
+      const contentSection = document.querySelector(".content-hover-section");
+      let contentEntryStarted = false;
+
+      const startContentEntry = () => {
+        if (!contentSection || contentEntryStarted) return;
+        contentEntryStarted = true;
+        contentSection.classList.add("is-visible");
+        window.setTimeout(() => {
+          contentSection.classList.add("is-entry-complete");
+        }, 1760);
+      };
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            const section = entry.target;
+
+            if (entry.isIntersecting) {
+              section.classList.add("is-active");
+              if (section === contentSection) startContentEntry();
+            } else {
+              section.classList.remove("is-active");
+            }
+          });
+        }, {
+          root: null,
+          rootMargin: "-35% 0px -35% 0px",
+          threshold: 0
+        });
+
+        sections.forEach((section) => observer.observe(section));
+      } else {
+        sections.forEach((section) => section.classList.add("is-active"));
+        startContentEntry();
+      }
+    })();
+  </script>
+</body>
+</html>
