@@ -542,51 +542,19 @@
     .skill-map-section .a7 { animation: labelIn 220ms ease-out 1720ms forwards; }
     .skill-map-section .a8 { animation: labelIn 220ms ease-out 1880ms forwards; }
 
-    .skill-map-section .r1 { animation: draw 620ms cubic-bezier(.55, 0, .25, 1) 2680ms forwards; }
-    .skill-map-section .c1 { animation: labelIn 260ms ease-out 3340ms forwards; }
-    .skill-map-section .b1 { animation: draw 320ms cubic-bezier(.55, 0, .25, 1) 3650ms forwards; }
-    .skill-map-section .s1 { animation: revealText 430ms ease-out 4020ms forwards; }
-
-    .skill-map-section .r2 { animation: draw 600ms cubic-bezier(.55, 0, .25, 1) 4500ms forwards; }
-    .skill-map-section .c2 { animation: labelIn 260ms ease-out 5140ms forwards; }
-    .skill-map-section .b2 { animation: draw 300ms cubic-bezier(.55, 0, .25, 1) 5450ms forwards; }
-    .skill-map-section .s2 { animation: revealText 430ms ease-out 5800ms forwards; }
-
-    .skill-map-section .r3 { animation: draw 580ms cubic-bezier(.55, 0, .25, 1) 6280ms forwards; }
-    .skill-map-section .c3 { animation: labelIn 260ms ease-out 6900ms forwards; }
-    .skill-map-section .b3 { animation: draw 300ms cubic-bezier(.55, 0, .25, 1) 7210ms forwards; }
-    .skill-map-section .s3 { animation: revealText 430ms ease-out 7560ms forwards; }
-
-    .skill-map-section .r4 { animation: draw 580ms cubic-bezier(.55, 0, .25, 1) 8040ms forwards; }
-    .skill-map-section .c4 { animation: labelIn 260ms ease-out 8660ms forwards; }
-    .skill-map-section .b4 { animation: draw 280ms cubic-bezier(.55, 0, .25, 1) 8970ms forwards; }
-    .skill-map-section .s4 { animation: revealText 430ms ease-out 9300ms forwards; }
-
-    .skill-map-section .r5 { animation: draw 600ms cubic-bezier(.55, 0, .25, 1) 9780ms forwards; }
-    .skill-map-section .c5 { animation: labelIn 260ms ease-out 10420ms forwards; }
-    .skill-map-section .b5 { animation: draw 300ms cubic-bezier(.55, 0, .25, 1) 10730ms forwards; }
-    .skill-map-section .s5 { animation: revealText 430ms ease-out 11080ms forwards; }
-
-    .skill-map-section .r6 { animation: draw 620ms cubic-bezier(.55, 0, .25, 1) 11560ms forwards; }
-    .skill-map-section .c6 { animation: labelIn 260ms ease-out 12220ms forwards; }
-    .skill-map-section .b6 { animation: draw 320ms cubic-bezier(.55, 0, .25, 1) 12530ms forwards; }
-    .skill-map-section .s6 { animation: revealText 430ms ease-out 12900ms forwards; }
-
-    .skill-map-section .mask-reveal line {
-      stroke: #fff;
-      stroke-width: 72;
-      stroke-linecap: butt;
-      transform-box: fill-box;
-      transform-origin: left center;
-      transform: scaleX(0);
+    /* 弧形文字播完后：6 条技能轴同步向外展开，端点轨迹形成一道扩散的弧 */
+    .skill-map-section .ray {
+      animation: draw 1100ms cubic-bezier(.4, 0, .2, 1) 2500ms forwards;
     }
-
-    .skill-map-section .m1 { animation: maskGrow 430ms ease-out 4020ms forwards; }
-    .skill-map-section .m2 { animation: maskGrow 430ms ease-out 5800ms forwards; }
-    .skill-map-section .m3 { animation: maskGrow 430ms ease-out 7560ms forwards; }
-    .skill-map-section .m4 { animation: maskGrow 430ms ease-out 9300ms forwards; }
-    .skill-map-section .m5 { animation: maskGrow 430ms ease-out 11080ms forwards; }
-    .skill-map-section .m6 { animation: maskGrow 430ms ease-out 12900ms forwards; }
+    .skill-map-section .category {
+      animation: labelIn 300ms ease-out 3500ms forwards;
+    }
+    .skill-map-section .branch {
+      animation: draw 320ms cubic-bezier(.4, 0, .2, 1) 3700ms forwards;
+    }
+    .skill-map-section .skill {
+      animation: revealText 450ms ease-out 4000ms forwards;
+    }
 
     .skill-map-section .arrow-line,
     .skill-map-section .arrow-head,
@@ -639,8 +607,7 @@
       1% { opacity: 1; }
       100% { opacity: 1; clip-path: inset(-24px 0 -24px 0); }
     }
-
-    @keyframes maskGrow {
+      @keyframes maskGrow {
       to { transform: scaleX(1); }
     }
 
@@ -1273,43 +1240,7 @@
             <desc id="desc">弧形文字先沿路径展开，随后多条线从中心点依次发散，最后技能文字按线条方向延伸出现。</desc>
       
             <defs>
-              <mask id="skillMask1" maskUnits="userSpaceOnUse">
-                <rect width="1920" height="1080" fill="black" />
-                <g class="mask-reveal" transform="translate(728 540) rotate(-25)">
-                  <line class="m1" x1="846" y1="0" x2="1120" y2="0" />
-                </g>
-              </mask>
-              <mask id="skillMask2" maskUnits="userSpaceOnUse">
-                <rect width="1920" height="1080" fill="black" />
-                <g class="mask-reveal" transform="translate(728 540) rotate(-15)">
-                  <line class="m2" x1="846" y1="0" x2="1120" y2="0" />
-                </g>
-              </mask>
-              <mask id="skillMask3" maskUnits="userSpaceOnUse">
-                <rect width="1920" height="1080" fill="black" />
-                <g class="mask-reveal" transform="translate(728 540) rotate(-5)">
-                  <line class="m3" x1="846" y1="0" x2="1120" y2="0" />
-                </g>
-              </mask>
-              <mask id="skillMask4" maskUnits="userSpaceOnUse">
-                <rect width="1920" height="1080" fill="black" />
-                <g class="mask-reveal" transform="translate(728 540) rotate(5)">
-                  <line class="m4" x1="870" y1="0" x2="1128" y2="0" />
-                </g>
-              </mask>
-              <mask id="skillMask5" maskUnits="userSpaceOnUse">
-                <rect width="1920" height="1080" fill="black" />
-                <g class="mask-reveal" transform="translate(728 540) rotate(15)">
-                  <line class="m5" x1="914" y1="0" x2="1180" y2="0" />
-                </g>
-              </mask>
-              <mask id="skillMask6" maskUnits="userSpaceOnUse">
-                <rect width="1920" height="1080" fill="black" />
-                <g class="mask-reveal" transform="translate(728 540) rotate(26.1)">
-                  <line class="m6" x1="914" y1="0" x2="1180" y2="0" />
-                </g>
-              </mask>
-            </defs>
+</defs>
       
             <text class="title" x="99" y="518">能力拆解</text>
             <path class="arrow-line" d="M 291 540 H 548" />
@@ -1327,6 +1258,8 @@
             </g>
       
             <circle class="origin-dot" cx="728" cy="540" r="2.1" />
+      
+            <g class="sweep-group">
       
             <g class="network">
               <g transform="translate(728 540) rotate(-25)">
@@ -1368,7 +1301,7 @@
       
               <g transform="translate(728 540) rotate(-15)">
                 <text class="category c2" x="640" y="0">交互</text>
-                <text class="skill s2" x="838" y="0">Figma|Framer</text>
+                <text class="skill s2" x="838" y="0">Figma</text>
               </g>
       
               <g transform="translate(728 540) rotate(-5)">
@@ -1383,13 +1316,14 @@
       
               <g transform="translate(728 540) rotate(15)">
                 <text class="category c5" x="640" y="0">算法爬虫</text>
-                <text class="skill s5" x="906" y="0">Python/C++</text>
+                <text class="skill s5" x="906" y="0">Python</text>
               </g>
       
               <g transform="translate(728 540) rotate(26.1)">
                 <text class="category c6" x="640" y="0">硬件开发</text>
                 <text class="skill s6" x="906" y="0">Arduino</text>
               </g>
+            </g>
             </g>
           </svg>
         </main>
