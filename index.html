@@ -547,13 +547,13 @@
       animation: draw 1100ms cubic-bezier(.4, 0, .2, 1) 2500ms forwards;
     }
     .skill-map-section .category {
-      animation: labelIn 300ms ease-out 3500ms forwards;
+      animation: revealText 520ms ease-out 3450ms forwards;
     }
     .skill-map-section .branch {
-      animation: draw 320ms cubic-bezier(.4, 0, .2, 1) 3700ms forwards;
+      animation: draw 320ms cubic-bezier(.4, 0, .2, 1) 3750ms forwards;
     }
     .skill-map-section .skill {
-      animation: revealText 450ms ease-out 4000ms forwards;
+      animation: revealText 450ms ease-out 4050ms forwards;
     }
 
     .skill-map-section .arrow-line,
@@ -1235,8 +1235,7 @@
 
     <section class="skill-map-section">
       <main class="stage" aria-label="能力拆解动画">
-          <svg viewBox="0 0 1920 1080" role="img" aria-labelledby="title desc">
-            <title id="title">能力拆解 SVG 路径动画</title>
+          <svg viewBox="0 0 1920 1080" role="img" aria-label="能力拆解">
             <desc id="desc">弧形文字先沿路径展开，随后多条线从中心点依次发散，最后技能文字按线条方向延伸出现。</desc>
       
             <defs>
