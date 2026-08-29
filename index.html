@@ -737,8 +737,8 @@
       overflow: hidden;
       cursor: pointer;
       background-image: var(--image);
-      background-size: 100% 100%;
-      background-position: center;
+      background-size: cover;
+      background-position: var(--bg-x, 50%) center;
       background-repeat: no-repeat;
       outline: none;
       transition:
@@ -833,13 +833,13 @@
       background: rgba(245, 239, 232, .96);
     }
 
-    .content-hover-section .i1 { --image: url("assets/panel-01.png"); }
-    .content-hover-section .i2 { --image: url("assets/panel-02.png"); }
-    .content-hover-section .i3 { --image: url("assets/panel-03.png"); }
-    .content-hover-section .i4 { --image: url("assets/panel-04.png"); }
-    .content-hover-section .i5 { --image: url("assets/panel-05.png"); }
-    .content-hover-section .i6 { --image: url("assets/panel-06.png"); }
-    .content-hover-section .i7 { --image: url("assets/panel-more.png"); }
+    .content-hover-section .i1 { --image: url("assets/panel-01.webp"); --bg-x: 50.0%; }
+    .content-hover-section .i2 { --image: url("assets/panel-02.webp"); --bg-x: 44.9%; }
+    .content-hover-section .i3 { --image: url("assets/panel-03.webp"); --bg-x: 50.0%; }
+    .content-hover-section .i4 { --image: url("assets/panel-04.webp"); --bg-x: 50.0%; }
+    .content-hover-section .i5 { --image: url("assets/panel-05.webp"); --bg-x: 50.0%; }
+    .content-hover-section .i6 { --image: url("assets/panel-06.webp"); --bg-x: 59.2%; }
+    .content-hover-section .i7 { --image: url("assets/panel-more.webp"); --bg-x: 53.1%; }
 
     .content-hover-section .i1 .title { top: calc(var(--panel-top) + 1.82cqw); left: 3.78cqw; width: 6.4cqw; }
     .content-hover-section .i1 .cn { top: calc(var(--panel-top) + 21.05cqw); left: 6.45cqw; width: 3.2cqw; }
